@@ -125,6 +125,6 @@ slot_3 = Inventory_Slot(x = 1190, anchorIndex = 2,batch=display_batch)
 actionText = pyglet.text.Label('',
                                font_name='Times New Roman',
                                font_size=14,
-                               x=1040, y=1800, color = (0,0,0,255),
+                               x=1040, y=180, color = (0,0,0,255),
                                anchor_x='center', anchor_y='center', batch=display_batch)
 inventory_slots = draw_containers(batch=display_batch)
