@@ -54,7 +54,7 @@ class ItemSpawning():
         pickSpawn = random.choice(CookBook.Ingredients)
         pick = [0,0,0,0,0,1,1,1,1,2]
         self.item_list.append(ItemEntity(img=assets.items_img[assets.items_img.index(pyglet.resource.image('{}.png'.format(pickSpawn)))] , 
-            x=self.locations[0][0], y=self.locations[0][1], name = pickSpawn, spawnerID = itemSpawner_first))
+            x=self.locations[0][0], y=self.locations[0][1], name = pickSpawn, spawnerID = itemSpawner_first,batch = self.batch))
 
 class ItemEntity(pyglet.sprite.Sprite):
     def __init__(self,name,spawnerID,*args,**kwargs):
@@ -556,6 +556,7 @@ class Player(pyglet.sprite.Sprite):
                     if itemNearby:
                         interface.item_get(self.nearItems[0])
                         print(itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])])
+                        itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])].delete()
                         del itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])]
                     else:
 	                    interface.actionText.text = "There's nothing here."
