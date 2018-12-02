@@ -644,7 +644,7 @@ class SP_Bar(pyglet.sprite.Sprite):
         self.continueUpdate = True
 
     def update(self):
-            self.scale_y = player.satiety/100 
+            self.scale_x = player.satiety/100 
         
 
 class HP_Bar(pyglet.sprite.Sprite):
@@ -660,8 +660,9 @@ class HP_Bar(pyglet.sprite.Sprite):
         else:
             self.continueUpdate = False
 
-satiety = SP_Bar(x=1200,y=200,batch=entity_batch)
-health = HP_Bar(x=1100,y=250,batch=entity_batch)
+satiety = SP_Bar(x=125,y=205,batch=entity_batch)
+satietyBar = pyglet.sprite.Sprite(img=assets.satietyBar_img,x=125,y=203,batch=entity_batch)
+health = HP_Bar(x=125,y=75,batch=entity_batch)
 
 obstacles_first = ObstacleGroup(obstacleFile='obstacles_first.txt',batch=entity_batch)
 spawner_first = EnemySpawners(obstacleID=obstacles_first,batch=entity_batch)   
