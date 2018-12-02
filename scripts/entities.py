@@ -1,4 +1,4 @@
-import pyglet, random
+import pyglet, random, os
 import assets, interface, CookBook
 from pyglet.window import key
 
@@ -325,10 +325,12 @@ class Small_monster(Enemy):
     def __init__(self,*args,**kwargs):
         super().__init__(img=assets.monsterSmall_img,*args,**kwargs)
 
+        self.monsterType = 'small'
+
         self.spawner.monsterCount_small += 1
         
         self.health = 1
-        self.damage = 1
+        self.damage = 5
 
         self.timer = 0
         self.wait = 3
@@ -352,10 +354,12 @@ class Medium_monster(Enemy):
     def __init__(self,*args,**kwargs):
         super().__init__(img=assets.monsterMedium_img,*args,**kwargs)
 
+        self.monsterType = 'medium'
+
         self.spawner.monsterCount_medium += 1
         
         self.health = 2
-        self.damage = 2
+        self.damage = 10
 
         self.timer = 0
         self.wait = 1
@@ -449,10 +453,12 @@ class Large_monster(Enemy):
     def __init__(self,*args,**kwargs):
         super().__init__(img=assets.monsterLarge_img,*args,**kwargs)
 
+        self.monsterType = 'large'
+
         self.spawner.monsterCount_large += 1
         
         self.health = 3
-        self.damage = 2
+        self.damage = 10
 
         self.timer = 0
         self.wait = 1
@@ -511,16 +517,21 @@ class Player(pyglet.sprite.Sprite):
         self.moveX,self.moveY = 0,0
         self.coord = [self.x,self.y]
 
-        self.health = 10
+        self.satiety = 100.0
+        self.health = 10.0
         self.damage = 1
+
         self.dead = False
+
         self.nearItems = []
+
     def nearItemFinder(self):
         self.nearItems = []
         for n in itemSpawner_first.item_list:
             if((abs(self.x - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][0]) < 90) and 
                 (abs(self.y - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][1]) < 90)):
                 self.nearItems.append(n)
+
     def update(self):
         #Check if there are gettable items nearby
         itemNearby = False
@@ -576,6 +587,18 @@ class Player(pyglet.sprite.Sprite):
             if destination in self.spawner.enemy_coord:
                 self.fight_enemy(self.spawner.enemy_list[self.spawner.enemy_coord.index(destination)])
 
+            #Removes 1 satiety point every update if player isn't starving
+            if self.satiety > 0:
+                self.satiety -= 0.1
+
+            #Logic for handling starvation
+            if self.satiety <= 0:
+                self.health -= 0.1
+
+            #Triggers game over if health goes to 0
+            if self.health <= 0:
+                self.death()
+
     #Reduces HP from both enemy and player based on their respective damages
     #Calls deletion of enemy if their HP reaches 0
     #Calls death of player if player HP reaches 0
@@ -583,13 +606,23 @@ class Player(pyglet.sprite.Sprite):
         if self.dead == False:
             enemyindex = other_object.index
             other_object.health -= self.damage
-            self.health -= other_object.damage
+            if self.satiety > 0:
+                self.satiety -= other_object.damage
+                if self.satiety < 0:
+                    self.satiety = 0
 
-            print('HP: ',self.health,'Enemy: ',other_object.health)
+            print('SP: ',self.satiety,'Enemy: ',other_object.health)
             
             if self.health <= 0:
                 self.death()
             if other_object.health <= 0:
+                if other_object.monsterType == 'small':
+                    self.spawner.monsterCount_small -= 1
+                elif other_object.monsterType == 'medium':
+                    self.spawner.monsterCount_medium -= 1
+                elif other_object.monsterType == 'large':
+                    self.spawner.monsterCount_large -= 1
+
                 del(self.spawner.enemy_coord[enemyindex])
                 del(self.spawner.enemy_list[enemyindex])
                 
@@ -603,7 +636,33 @@ class Player(pyglet.sprite.Sprite):
     def death(self):
         self.dead = True
         print('You Died')
-         
+
+class SP_Bar(pyglet.sprite.Sprite):
+    def __init__(self,*args,**kwargs):
+        super().__init__(img=assets.satiety_img,*args, **kwargs)
+        
+        self.continueUpdate = True
+
+    def update(self):
+            self.scale_y = player.satiety/100 
+        
+
+class HP_Bar(pyglet.sprite.Sprite):
+    def __init__(self,*args,**kwargs):
+        super().__init__(img=assets.health_img,*args, **kwargs)
+
+        self.continueUpdate = True
+
+    def update(self):
+        if self.scale > 0:
+            self.continueUpdate = True
+            self.scale = player.health/10
+        else:
+            self.continueUpdate = False
+
+satiety = SP_Bar(x=1200,y=200,batch=entity_batch)
+health = HP_Bar(x=1100,y=250,batch=entity_batch)
+
 obstacles_first = ObstacleGroup(obstacleFile='obstacles_first.txt',batch=entity_batch)
 spawner_first = EnemySpawners(obstacleID=obstacles_first,batch=entity_batch)   
 itemSpawner_first = ItemSpawning(batch = entity_batch) 

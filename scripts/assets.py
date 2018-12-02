@@ -28,6 +28,9 @@ CravingHeader_img.anchor_y = CravingHeader_img.height
 
 IngredientSlot_img = pyglet.resource.image('ingredslot.png')
 
+health_img = pyglet.resource.image('red.png')
+satiety_img = pyglet.resource.image('blue.png')
+
 def center_image(image):
     image.anchor_x = image.width//2
     image.anchor_y = image.height//2
@@ -44,6 +47,8 @@ center_image(monsterLarge_img)
 center_image(spawner_img)
 center_image(craving_bg)
 center_image(IngredientSlot_img)
+center_image(health_img)
+satiety_img.anchor_x = satiety_img.width//2
 
 for i in items_img:
     center_image(i)
