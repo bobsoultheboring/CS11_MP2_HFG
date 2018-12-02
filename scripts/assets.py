@@ -13,6 +13,20 @@ monsterSmall_img = pyglet.resource.image('monster_small.png')
 monsterMedium_img = pyglet.resource.image('monster_medium.png')
 monsterLarge_img = pyglet.resource.image('monster_large.png')
 spawner_img = pyglet.resource.image('enemy_spawner.png')
+itemcontainer_img = pyglet.resource.image('itemcontainer.png')
+craving_bg = pyglet.resource.image('temporaryCravingBG.png')
+#item images
+items_img = [pyglet.resource.image("null.png"), pyglet.resource.image("ing1.png"), pyglet.resource.image("ing2.png"), pyglet.resource.image("ing3.png")]
+
+###Additions:
+#Ingredients for CravingHeader_img
+CravingIngredients_img = [pyglet.resource.image("ing1.png"), pyglet.resource.image("ing2.png"), pyglet.resource.image("ing3.png")]
+#Cravings Bar
+CravingHeader_img = pyglet.resource.image('cravebar.png')
+CravingHeader_img.anchor_x = CravingHeader_img.width//2
+CravingHeader_img.anchor_y = CravingHeader_img.height
+
+IngredientSlot_img = pyglet.resource.image('ingredslot.png')
 
 def center_image(image):
     image.anchor_x = image.width//2
@@ -28,3 +42,9 @@ center_image(monsterSmall_img)
 center_image(monsterMedium_img)
 center_image(monsterLarge_img)
 center_image(spawner_img)
+center_image(craving_bg)
+center_image(IngredientSlot_img)
+
+for i in items_img:
+    center_image(i)
+

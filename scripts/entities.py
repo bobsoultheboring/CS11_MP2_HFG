@@ -1,8 +1,70 @@
 import pyglet, random
-import assets
+import assets, interface, CookBook
 from pyglet.window import key
 
 entity_batch = pyglet.graphics.Batch()
+
+class ItemSpawning():
+    '''
+    Handles Itemspawns. Set at certain locations only.
+    Based off of the EnemySpawners class.
+    '''
+    def __init__(self,batch,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+
+        self.spawn = False
+
+        self.timer = 0
+        self.wait = 15
+
+        self.batch = batch
+
+        self.item_list = []
+        self.item_coord = []
+
+        #location of all the individual spawners
+        #self.locations = [[500,510]] #original
+        self.locations = [[290,510]] #for debug - location:blender in kitchen
+        self.spawnerList = []
+        
+        for spawner in self.locations:
+            self.spawnerList.append(pyglet.sprite.Sprite(img=assets.spawner_img,x=spawner[0],y=spawner[1],batch=batch))
+
+    #Update function to spawn items
+    #Spawns a monster once every eight 'turns'
+    def update(self):
+        if len(self.locations) > 0:
+            self.checkCapacity()
+            if self.spawn == True:
+                if self.timer < self.wait:
+                    self.timer += 1
+                elif self.timer == self.wait:
+                    self.spawnItem()
+                    self.timer = 0
+                
+    #Checks if any items need to be spawned
+    def checkCapacity(self):
+        if len(self.item_list) < 1:
+            self.spawn = True
+        else:
+            self.spawn = False
+
+	#Decides which monster to spawn, spawns them in one of the spawner objects
+    def spawnItem(self):
+        pickSpawn = random.choice(CookBook.Ingredients)
+        pick = [0,0,0,0,0,1,1,1,1,2]
+        self.item_list.append(ItemEntity(img=assets.items_img[assets.items_img.index(pyglet.resource.image('{}.png'.format(pickSpawn)))] , 
+            x=self.locations[0][0], y=self.locations[0][1], name = pickSpawn, spawnerID = itemSpawner_first))
+
+class ItemEntity(pyglet.sprite.Sprite):
+    def __init__(self,name,spawnerID,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+
+        #Places the monster's 'callsign' inside enemy_list
+        self.spawner = spawnerID
+        self.index = len(self.spawner.item_list)
+        self.spawner.item_coord.append([self.x,self.y])
+        self.itemName = name
 
 class ObstacleGroup():
     '''
@@ -452,8 +514,20 @@ class Player(pyglet.sprite.Sprite):
         self.health = 10
         self.damage = 1
         self.dead = False
-
+        self.nearItems = []
+    def nearItemFinder(self):
+        self.nearItems = []
+        for n in itemSpawner_first.item_list:
+            if((abs(self.x - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][0]) < 90) and 
+                (abs(self.y - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][1]) < 90)):
+                self.nearItems.append(n)
     def update(self):
+        #Check if there are gettable items nearby
+        itemNearby = False
+        if len(itemSpawner_first.item_list) > 0:
+            self.nearItemFinder()
+            if len(self.nearItems) > 0:
+                itemNearby = True
         #Makes sure the player doesn't move after dying
         if self.dead == False:
             #WASD movement
@@ -478,6 +552,13 @@ class Player(pyglet.sprite.Sprite):
                 self.moveX = 0
                 self.image=assets.playerB_img
                 moveLargeEnemies()
+            elif self.key_handler[key.SPACE]:
+                    if itemNearby:
+                        interface.item_get(self.nearItems[0])
+                        print(itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])])
+                        del itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])]
+                    else:
+	                    interface.actionText.text = "There's nothing here."
             else:
                 self.moveX = 0
                 self.moveY = 0
@@ -523,5 +604,6 @@ class Player(pyglet.sprite.Sprite):
         print('You Died')
          
 obstacles_first = ObstacleGroup(obstacleFile='obstacles_first.txt',batch=entity_batch)
-spawner_first = EnemySpawners(obstacleID=obstacles_first,batch=entity_batch)    
+spawner_first = EnemySpawners(obstacleID=obstacles_first,batch=entity_batch)   
+itemSpawner_first = ItemSpawning(batch = entity_batch) 
 player = Player(obstacleID=obstacles_first,spawnerID=spawner_first,x=480,y=150,batch=entity_batch)

@@ -1,9 +1,8 @@
-'''
-Ingredients = ['ham', 'cheese', 'mayonnaise', 'bread', 'chicken', 'fish', 
-    'soy sauce', 'garlic', 'salt & pepper', 'butter', 'leek', 'meat', 'parsley', 
-    'potatoes', 'onion', 'eggs', 'flour', 'sugar', 'milk', 'chocolate chips', 'pasta', 
-    'oranges', 'raspberries', 'strawberries', 'banana', 'lime', 'vanilla', 'mangoes']
-'''
+#Ingredients = ['ham', 'cheese', 'mayonnaise', 'bread', 'chicken', 'fish', 
+#    'soy sauce', 'garlic', 'salt & pepper', 'butter', 'leek', 'meat', 'parsley', 
+#    'potatoes', 'onion', 'eggs', 'flour', 'sugar', 'milk', 'chocolate chips', 'pasta', 
+#    'oranges', 'raspberries', 'strawberries', 'banana', 'lime', 'vanilla', 'mangoes']
+Ingredients = ['ing1', 'ing2', 'ing3'] #removed 'null' for now
 #########################################################################################
 Drinks = ['orange juice', 'mango shake', 'four-fruit shake', 'strawberry cheesecake shake', 
     'home-made cola']
@@ -11,7 +10,7 @@ Food = ['ham sandwich', 'chicken sandwich', 'baked fish', 'salt crust', 'skillet
     'pork chop', 'basic cupcakes', 'basic cookies', 'stir fry', 'mac and cheese']
 #########################################################################################
 
-Ingredients = {
+Recipe = {
     #Format:
     #    <FOOD> : (COOKING PLACE , INGREDIENTS as tuple)
 
