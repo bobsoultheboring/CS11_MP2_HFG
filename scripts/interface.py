@@ -87,7 +87,8 @@ class Inventory_Slot():
     def update(self):
         self.current_item_anchor = inventory[self.anchorindex]
         self.current_item = assets.items_img[assets.items_img.index(pyglet.resource.image("{}.png".format(self.current_item_anchor)))]
-        self.item_display = pyglet.sprite.Sprite(img=self.current_item,x=self.x, y=90, batch=display_batch)
+        assets.center_image(self.current_item)
+        self.item_display = pyglet.sprite.Sprite(img=self.current_item,x=self.x, y=75, batch=display_batch)
         if self.current_item_anchor == "null":
             self.item_description.text = "no item held"
         self.item_description.text = self.current_item_anchor
@@ -95,8 +96,10 @@ class Inventory_Slot():
 
 def draw_containers(batch = None):
     containers = []
-    for coordinate in [830, 980, 1130]:
-        containers.append(pyglet.sprite.Sprite(img=assets.itemcontainer_img,x=coordinate, y=0, batch=batch))
+    containerImage = assets.itemcontainer_img
+    for coordinate in [905, 1055, 1205]:
+        assets.center_image(assets.itemcontainer_img)
+        containers.append(pyglet.sprite.Sprite(img=containerImage,x=coordinate, y=75, batch=batch))
     return containers
 	
 def inventory_update_add(item):
@@ -119,9 +122,9 @@ def item_get(itemEntity):
     else:
         actionText.text = 'Your inventory is full.'
 
-slot_1 = Inventory_Slot(x = 890, anchorIndex = 0,batch=display_batch)
-slot_2 = Inventory_Slot(x = 1040, anchorIndex = 1,batch=display_batch)
-slot_3 = Inventory_Slot(x = 1190, anchorIndex = 2,batch=display_batch)
+slot_1 = Inventory_Slot(x = 905, anchorIndex = 0,batch=display_batch)
+slot_2 = Inventory_Slot(x = 1055, anchorIndex = 1,batch=display_batch)
+slot_3 = Inventory_Slot(x = 1205, anchorIndex = 2,batch=display_batch)
 actionText = pyglet.text.Label('',
                                font_name='Times New Roman',
                                font_size=14,
