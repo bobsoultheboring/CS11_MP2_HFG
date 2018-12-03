@@ -24,7 +24,7 @@ class ItemSpawning():
 
         #location of all the individual spawners
         #self.locations = [[500,510]] #original
-        self.locations = [[290,510]] #for debug - location:blender in kitchen
+        self.locations = [[300,510]] #for debug - location:blender in kitchen
         self.spawnerList = []
         
         for spawner in self.locations:
@@ -507,11 +507,12 @@ class Player(pyglet.sprite.Sprite):
     Player Class
     Includes movement with the WASD keys and prevents collision with obstacles
     '''
-    def __init__(self,obstacleID,spawnerID,*args,**kwargs):
+    def __init__(self,obstacleID,spawnerID,itemID,*args,**kwargs):
         super().__init__(img=assets.playerF_img,*args,**kwargs)
 
         self.obstacles = obstacleID
         self.spawner = spawnerID
+        self.iSpawner = itemID
 
         self.key_handler = key.KeyStateHandler()
         self.moveX,self.moveY = 0,0
@@ -524,29 +525,25 @@ class Player(pyglet.sprite.Sprite):
         self.dead = False
 
         self.nearItems = []
-        self.nearCooker = ""
+        self.onCooker = False
+
+        self.nearbyTiles = [[self.x-30,self.y],[self.x+30,self.y],[self.x,self.y-30],[self.x,self.y+30]]
 
     def nearItemFinder(self):
         self.nearItems = []
         for n in itemSpawner_first.item_list:
-            if((abs(self.x - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][0]) < 90) and 
-                (abs(self.y - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][1]) < 90)):
+            if self.iSpawner.item_coord[self.iSpawner.item_list.index(n)] in self.nearbyTiles:
                 self.nearItems.append(n)
 				
-    def cookingReady(self):
-        self.nearCooker = ""
-        #IDEALLY, the following code should look like:
-        #for n in listOfTheCookingThingoesCoordinates:
-        #    if((abs(self.x - n.x) < 60 and (abs(self.y - n.y) < 60)):
-        #        self.nearCooker = n.name
-		#but for now, we'll call it "pot" at x = 290, y = 510 and add more cookinig stations later
-        if((abs(self.x - 290) < 60 and (abs(self.y - 510) < 60))):
-            self.nearCooker = "Pot"
-
     def update(self):
         #Check if there are gettable items nearby
+        self.nearbyTiles = [[self.x-30,self.y],[self.x+30,self.y],[self.x,self.y-30],[self.x,self.y+30]]
         itemNearby = False
-        self.cookingReady()
+        #Checks if player is standing on the cooking spot
+        if [self.x,self.y] == [330,510]:
+            self.onCooker = True
+        else:
+            self.onCooker = False
         if len(itemSpawner_first.item_list) > 0:
             self.nearItemFinder()
             if len(self.nearItems) > 0:
@@ -576,19 +573,19 @@ class Player(pyglet.sprite.Sprite):
                 self.image=assets.playerB_img
                 moveLargeEnemies()
             elif self.key_handler[key._1]:
-                if (len(self.nearCooker) > 0):
+                if self.onCooker == True:
                     CookBook.itemCook(interface.inventory[0])
                 else:
                     CookBook.itemEat(interface.inventory[0])
                 interface.inventory_update_subtract(interface.inventory[0])
             elif self.key_handler[key._2]:
-                if (len(self.nearCooker) > 0):
+                if self.onCooker == True:
                     CookBook.itemCook(interface.inventory[1])
                 else:
                     CookBook.itemEat(interface.inventory[1])
                 interface.inventory_update_subtract(interface.inventory[1])
             elif self.key_handler[key._3]:
-                if (len(self.nearCooker) > 0):
+                if self.onCooker == True:
                     CookBook.itemCook(interface.inventory[2])
                 else:
                     CookBook.itemEat(interface.inventory[2])
@@ -698,4 +695,5 @@ health = HP_Bar(x=125,y=75,batch=entity_batch)
 obstacles_first = ObstacleGroup(obstacleFile='obstacles_first.txt',batch=entity_batch)
 spawner_first = EnemySpawners(obstacleID=obstacles_first,batch=entity_batch)   
 itemSpawner_first = ItemSpawning(batch = entity_batch) 
-player = Player(obstacleID=obstacles_first,spawnerID=spawner_first,x=480,y=150,batch=entity_batch)
+#player pos: x=480,y=150
+player = Player(obstacleID=obstacles_first,spawnerID=spawner_first,itemID=itemSpawner_first,x=480,y=150,batch=entity_batch)
