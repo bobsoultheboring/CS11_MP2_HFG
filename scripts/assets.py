@@ -17,7 +17,7 @@ itemcontainer_img = pyglet.resource.image('itemcontainer.png')
 craving_bg = pyglet.resource.image('temporaryCravingBG.png')
 #item images
 items_img = [pyglet.resource.image("null.png"), pyglet.resource.image("ing1.png"), pyglet.resource.image("ing2.png"), pyglet.resource.image("ing3.png")]
-
+food_img = [pyglet.resource.image("test food.png")]
 ###Additions:
 #Ingredients for CravingHeader_img
 CravingIngredients_img = [pyglet.resource.image("ing1.png"), pyglet.resource.image("ing2.png"), pyglet.resource.image("ing3.png")]
@@ -68,5 +68,7 @@ center_image(Oven_img)
 center_image(Blender_img)
 
 for i in items_img:
+    center_image(i)
+for i in food_img:
     center_image(i)
 

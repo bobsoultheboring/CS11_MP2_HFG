@@ -524,6 +524,7 @@ class Player(pyglet.sprite.Sprite):
         self.dead = False
 
         self.nearItems = []
+        self.nearCooker = ""
 
     def nearItemFinder(self):
         self.nearItems = []
@@ -531,10 +532,21 @@ class Player(pyglet.sprite.Sprite):
             if((abs(self.x - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][0]) < 90) and 
                 (abs(self.y - itemSpawner_first.item_coord[itemSpawner_first.item_list.index(n)][1]) < 90)):
                 self.nearItems.append(n)
+				
+    def cookingReady(self):
+        self.nearCooker = ""
+        #IDEALLY, the following code should look like:
+        #for n in listOfTheCookingThingoesCoordinates:
+        #    if((abs(self.x - n.x) < 60 and (abs(self.y - n.y) < 60)):
+        #        self.nearCooker = n.name
+		#but for now, we'll call it "pot" at x = 290, y = 510 and add more cookinig stations later
+        if((abs(self.x - 290) < 60 and (abs(self.y - 510) < 60))):
+            self.nearCooker = "Pot"
 
     def update(self):
         #Check if there are gettable items nearby
         itemNearby = False
+        self.cookingReady()
         if len(itemSpawner_first.item_list) > 0:
             self.nearItemFinder()
             if len(self.nearItems) > 0:
@@ -563,6 +575,25 @@ class Player(pyglet.sprite.Sprite):
                 self.moveX = 0
                 self.image=assets.playerB_img
                 moveLargeEnemies()
+            elif self.key_handler[key._1]:
+                if (len(self.nearCooker) > 0):
+                    CookBook.itemCook(interface.inventory[0])
+                else:
+                    CookBook.itemEat(interface.inventory[0])
+                interface.inventory_update_subtract(interface.inventory[0])
+            elif self.key_handler[key._2]:
+                if (len(self.nearCooker) > 0):
+                    CookBook.itemCook(interface.inventory[1])
+                else:
+                    CookBook.itemEat(interface.inventory[1])
+                interface.inventory_update_subtract(interface.inventory[1])
+            elif self.key_handler[key._3]:
+                if (len(self.nearCooker) > 0):
+                    CookBook.itemCook(interface.inventory[2])
+                else:
+                    CookBook.itemEat(interface.inventory[2])
+                interface.inventory_update_subtract(interface.inventory[2])
+                
             elif self.key_handler[key.SPACE]:
                     if itemNearby:
                         interface.item_get(self.nearItems[0])

@@ -4,6 +4,30 @@ import assets, CookBook
 inventory = ['null','null','null']
 display_batch = pyglet.graphics.Batch()
 
+class Countdown(object):
+    def __init__(self, time):
+        self.time = time
+        self.time_display = pyglet.text.Label('{}:{}'.format(time//60, time%60),
+            font_name = 'Arial Black',
+            font_size = 50,
+            x = (1280 - 100) , y = (720 - 100),
+            color = (0,0,0,255),
+            anchor_x = 'right', anchor_y = 'center',
+            batch = display_batch)
+ 
+    def update(self):
+        self.time -= 1
+        self.mins = self.time//60
+        self.secs = self.time%60
+        if self.secs > 10:
+            self.time_display.text = '{}:{}'.format(self.mins, self.secs)
+        else:
+            self.time_display.text = '{}:0{}'.format(self.mins, self.secs)
+ 
+        return self.time
+       
+
+
 class FoodCrave():
     def __init__(self):
         #This is a sample counter, probably to be declared and modified somewhere else (e.g. entities). 
@@ -25,9 +49,16 @@ class FoodCrave():
         if Priority%3 != 0: 
             return random.choice(CookBook.Food)
         else: 
-            return random.choice(CookBook.Drinks)
+            #return random.choice(CookBook.Drinks)
+            return random.choice(CookBook.Food)
 
-Craving = FoodCrave()
+    def crave(self):
+        self.Priority += 1
+        self.To_Prepare = self.Get_FoodDrink(self.Priority)
+        self.Ingredients = CookBook.Recipe.get(self.To_Prepare)[1]
+        print(self.To_Prepare, self.Ingredients)
+        CurrentCraving.Draw_Craving()
+        CurrentCraving.Draw_Items_in_Slots(self.Ingredients)
 
 class CravingBar(object):
     def __init__(self):
@@ -35,14 +66,15 @@ class CravingBar(object):
         self.CravingBar = [] #Should contain the Bar and the Slots
         self.Slots = [] #Should contain the item sprites in the slots
         self.Draw_CravingBar()
-        self.Draw_Items_in_Slots()
 
         #Draws craving plate and arrow beside the ingredients
         self.cravePlate = pyglet.sprite.Sprite(assets.CravingPlate_img,x = 1280//2-350,y=640,batch=display_batch)
         self.craveArrow = pyglet.sprite.Sprite(assets.CravingArrow_img,x = 1280//2-270,y=650,batch=display_batch)
+        self.craving = pyglet.sprite.Sprite(assets.items_img[0],x = 1280//2-350,y=660,batch=display_batch)
 
-        #self.Draw_Craving()  -- should draw the craving inside the plate
-
+    def Draw_Craving(self):
+        self.craving.image = assets.food_img[CookBook.Food.index(Craving.To_Prepare)]
+	
     def Draw_CravingBar(self):
         #Header
         self.CravingBar.append(pyglet.sprite.Sprite(assets.CravingHeader_img, x = 1280/2, y = (720), batch = display_batch))
@@ -60,12 +92,12 @@ class CravingBar(object):
             self.temp_x += assets.IngredientSlot_img.width//2
             self.temp_x += 7
             
-    def Draw_Items_in_Slots(self):
+    def Draw_Items_in_Slots(self, ingredients):
         self.temp_x = 1280//2-50
         self.temp_x -= ((14*2) + (assets.IngredientSlot_img.width*3))-7
 
-        for i in range(len(Craving.Ingredients)):
-            _1 = random.choice(assets.CravingIngredients_img) #Randomized for now.
+        for i in (ingredients):
+            _1 = assets.items_img[CookBook.Ingredients.index(i) + 1] 
             _1.anchor_x = _1.width//2
             _1.anchor_y = _1.height//2
 
@@ -75,8 +107,6 @@ class CravingBar(object):
             self.temp_x += assets.IngredientSlot_img.width//2
             self.temp_x += 7
         
-CurrentCraving = CravingBar()
-
 class Inventory_Slot():
     '''Controls the CONTENTS of the inventory slots. 
        The actual slots are drawn using draw_containers()''' 
@@ -138,3 +168,7 @@ actionText = pyglet.text.Label('',
                                x=1055, y=200, color = (0,0,0,255),
                                anchor_x='center', anchor_y='center', batch=display_batch)
 inventory_slots = draw_containers(batch=display_batch)
+Timer = Countdown(time = 10)
+Craving = FoodCrave()
+CurrentCraving = CravingBar()
+Craving.crave()
