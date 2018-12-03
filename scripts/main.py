@@ -14,6 +14,8 @@ def firstFloor():
     global player
     firstFloorBackground = pyglet.sprite.Sprite(img=assets.firstFloor_img,
                                       x=gameWindow.width//2,y=gameWindow.height//2)
+
+    playerStats = [entities.satiety,entities.health]
     
     gameWindow.push_handlers(entities.player.key_handler)
 
@@ -21,6 +23,9 @@ def firstFloor():
         entities.player.update()
         if entities.player.dead == True:
             gameWindow.remove_handlers(entities.player.key_handler)
+        for obj in playerStats:
+            if obj.continueUpdate == True:
+                obj.update()
 
     def updateEnemyFirst(dt):
         entities.spawner_first.update()

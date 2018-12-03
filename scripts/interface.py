@@ -31,10 +31,17 @@ Craving = FoodCrave()
 
 class CravingBar(object):
     def __init__(self):
+
         self.CravingBar = [] #Should contain the Bar and the Slots
         self.Slots = [] #Should contain the item sprites in the slots
         self.Draw_CravingBar()
         self.Draw_Items_in_Slots()
+
+        #Draws craving plate and arrow beside the ingredients
+        self.cravePlate = pyglet.sprite.Sprite(assets.CravingPlate_img,x = 1280//2-350,y=640,batch=display_batch)
+        self.craveArrow = pyglet.sprite.Sprite(assets.CravingArrow_img,x = 1280//2-270,y=650,batch=display_batch)
+
+        #self.Draw_Craving()  -- should draw the craving inside the plate
 
     def Draw_CravingBar(self):
         #Header
@@ -43,7 +50,7 @@ class CravingBar(object):
         #Slots
         self.temp_y = (720-assets.CravingHeader_img.height)+(assets.CravingHeader_img.height/2) #Position: CenterY of Bar
         
-        self.temp_x = 1280//2
+        self.temp_x = 1280//2-50
         self.temp_x -= ((14*2) + (assets.IngredientSlot_img.width*3))-7
 
         for i in range(6):
@@ -54,7 +61,7 @@ class CravingBar(object):
             self.temp_x += 7
             
     def Draw_Items_in_Slots(self):
-        self.temp_x = 1280//2
+        self.temp_x = 1280//2-50
         self.temp_x -= ((14*2) + (assets.IngredientSlot_img.width*3))-7
 
         for i in range(len(Craving.Ingredients)):
@@ -67,7 +74,7 @@ class CravingBar(object):
             self.Slots.append(pyglet.sprite.Sprite(img=_1, x=self.temp_x, y=self.temp_y, batch = display_batch))
             self.temp_x += assets.IngredientSlot_img.width//2
             self.temp_x += 7
-
+        
 CurrentCraving = CravingBar()
 
 class Inventory_Slot():
@@ -97,7 +104,7 @@ class Inventory_Slot():
 def draw_containers(batch = None):
     containers = []
     containerImage = assets.itemcontainer_img
-    for coordinate in [905, 1055, 1205]:
+    for coordinate in [955, 1055, 1155]:
         assets.center_image(assets.itemcontainer_img)
         containers.append(pyglet.sprite.Sprite(img=containerImage,x=coordinate, y=75, batch=batch))
     return containers
@@ -122,12 +129,12 @@ def item_get(itemEntity):
     else:
         actionText.text = 'Your inventory is full.'
 
-slot_1 = Inventory_Slot(x = 905, anchorIndex = 0,batch=display_batch)
+slot_1 = Inventory_Slot(x = 955, anchorIndex = 0,batch=display_batch)
 slot_2 = Inventory_Slot(x = 1055, anchorIndex = 1,batch=display_batch)
-slot_3 = Inventory_Slot(x = 1205, anchorIndex = 2,batch=display_batch)
+slot_3 = Inventory_Slot(x = 1155, anchorIndex = 2,batch=display_batch)
 actionText = pyglet.text.Label('',
                                font_name='Times New Roman',
                                font_size=14,
-                               x=1040, y=180, color = (0,0,0,255),
+                               x=1055, y=200, color = (0,0,0,255),
                                anchor_x='center', anchor_y='center', batch=display_batch)
 inventory_slots = draw_containers(batch=display_batch)
