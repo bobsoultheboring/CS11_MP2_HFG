@@ -17,7 +17,7 @@ itemcontainer_img = pyglet.resource.image('itemcontainer.png')
 craving_bg = pyglet.resource.image('temporaryCravingBG.png')
 #item images
 items_img = [pyglet.resource.image("null.png"), pyglet.resource.image("ing1.png"), pyglet.resource.image("ing2.png"), pyglet.resource.image("ing3.png")]
-
+food_img = [pyglet.resource.image("test food.png")]
 ###Additions:
 #Ingredients for CravingHeader_img
 CravingIngredients_img = [pyglet.resource.image("ing1.png"), pyglet.resource.image("ing2.png"), pyglet.resource.image("ing3.png")]
@@ -27,6 +27,19 @@ CravingHeader_img.anchor_x = CravingHeader_img.width//2
 CravingHeader_img.anchor_y = CravingHeader_img.height
 
 IngredientSlot_img = pyglet.resource.image('ingredslot.png')
+
+#Additional assets for the craving bar
+CravingPlate_img = pyglet.resource.image('foodplate.png')
+CravingArrow_img = pyglet.resource.image('foodarrow.png')
+Stove_img = pyglet.resource.image('stove.png')
+Microwave_img = pyglet.resource.image('microwave.png')
+Oven_img = pyglet.resource.image('oven.png')
+Blender_img = pyglet.resource.image('blender.png')
+
+health_img = pyglet.resource.image('red.png')
+satiety_img = pyglet.resource.image('blue.png')
+
+satietyBar_img = pyglet.resource.image('satietybar.png')
 
 def center_image(image):
     image.anchor_x = image.width//2
@@ -44,7 +57,18 @@ center_image(monsterLarge_img)
 center_image(spawner_img)
 center_image(craving_bg)
 center_image(IngredientSlot_img)
+center_image(health_img)
+satiety_img.anchor_y = satiety_img.width//2
+satietyBar_img.anchor_y = satiety_img.width//2
+center_image(CravingPlate_img)
+center_image(CravingArrow_img)
+center_image(Stove_img)
+center_image(Microwave_img)
+center_image(Oven_img)
+center_image(Blender_img)
 
 for i in items_img:
+    center_image(i)
+for i in food_img:
     center_image(i)
 
