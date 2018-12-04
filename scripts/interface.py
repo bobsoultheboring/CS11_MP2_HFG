@@ -56,12 +56,15 @@ class FoodCrave():
         #LIST of Ingredients for craving
         #Ingredients that have been added to the respective "machine" can be removed from this list
         self.Ingredients = CookBook.Recipe.get(self.To_Prepare)[1]
-        print(self.To_Prepare, self.Ingredients)
 
+        print(self.To_Prepare, self.Ingredients)
+        self.item_names = []
         #Edit this to preserve Cookbook's dictionary
         self.ingreds = []
+        self.prioIngreds = []
         for ing in self.Ingredients:
             self.ingreds.append(ing)
+            self.prioIngreds.append(ing)
 
     def Get_FoodDrink(self,Priority):
         #This is a counter, probably to be declared and modified somewhere else (e.g. entities). 
@@ -78,8 +81,14 @@ class FoodCrave():
         self.To_Prepare = self.Get_FoodDrink(self.Priority)
         self.Ingredients = CookBook.Recipe.get(self.To_Prepare)[1]
         self.ingreds = []
+        self.prioIngreds = []
         for ing in self.Ingredients:
             self.ingreds.append(ing)
+            self.prioIngreds.append(ing)
+        for ing in range(len(self.prioIngreds)-1,-1,-1):
+            if self.prioIngreds[ing] in self.item_names:
+                del self.prioIngreds[ing]
+        print('prioIngreds: ',self.prioIngreds)
         print(self.To_Prepare, self.Ingredients)
         CurrentCraving.Draw_Craving()
         CurrentCraving.Draw_Items_in_Slots(self.Ingredients)
@@ -179,6 +188,7 @@ def inventory_update_subtract(item):
 def item_get(itemEntity):
     if ("null" in inventory):
         inventory_update_add(itemEntity.itemName)
+        del Craving.item_names[Craving.item_names.index(itemEntity.itemName)]
         entities.itemSpawner_first.item_list[entities.itemSpawner_first.item_list.index(entities.player.nearItems[0])].delete()
         entities.itemSpawner_first.item_list[entities.itemSpawner_first.item_list.index(entities.player.nearItems[0])] = []
         print(inventory) ####### FOR DEBUG
