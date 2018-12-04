@@ -22,7 +22,7 @@ class ItemSpawning():
 
         #location of all the individual spawners
         #self.locations = [[300,510]] #for debug
-        self.locations = [[300,510],[390,270]]
+        self.locations = [[810,120],[390,270],[810,360],[600,290]]
         self.spawnerList = []
 
         for i in self.locations:
@@ -131,7 +131,7 @@ class EnemySpawners():
         self.enemy_coord = []
 
         #location of all the individual spawners
-        self.locations = [[600,510]]
+        self.locations = [[600,510],[840,150],[240,240]]
         self.spawnerList = []
         
         for spawner in self.locations:
@@ -692,6 +692,26 @@ class Player(pyglet.sprite.Sprite):
         scoreFile = open('high_score.txt','r')
         self.highScore = scoreFile.readline().rsplit()[0]
         scoreFile.close()
+
+    def timeup(self):
+        interface.actionText.text = "You ran out of time."
+        self.highscorelabel = pyglet.text.Label(text = 'High Score',font_name='Arial Black',font_size=15, x=1055, y=350, 
+            color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+        if int(player_score.Score_Label.text) > int(self.highScore):
+            self.High_Score = pyglet.text.Label(text = player_score.Score_Label.text,font_name='Arial Black',font_size=40, x=1055, y=400, 
+                color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+            self.NEWlabel = pyglet.text.Label(text = 'NEW',font_name='Arial Black',font_size=30, x=1055, y=450, 
+                color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+            self.newHighScore = True
+        elif int(player_score.Score_Label.text) <= int(self.highScore):
+            self.High_Score = pyglet.text.Label(text = self.highScore,font_name='Arial Black',font_size=40, x=1055, y=400, 
+                color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+        rToRespawn = pyglet.text.Label('Hold R to respawn',
+                               font_name='Times New Roman',
+                               font_size=14,
+                               x=1055, y=175, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=entity_batch)
+
 
 class Key_Command():
     def __init__(self,*args,**kwargs):

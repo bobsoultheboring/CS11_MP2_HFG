@@ -6,6 +6,7 @@ display_batch = pyglet.graphics.Batch()
 
 class Countdown(object):
     def __init__(self, time):
+        self.lazy_timecheck = 840 #14 minutes = 840
         self.time = time
         self.timeScore = 30
         self.time_display = pyglet.text.Label(('8:00'),
@@ -29,6 +30,7 @@ class Countdown(object):
         self.timeScore -= 1
 
         self.time += 1
+        self.lazy_timecheck -= 1
         self.mins = self.time//60
         self.secs = self.time%60
         if self.mins >= 12:
@@ -40,7 +42,7 @@ class Countdown(object):
         else:
             self.time_display.text = '{}:0{}'.format(self.mins, self.secs)
  
-        return self.time
+        return self.lazy_timecheck
 
 class FoodCrave():
     def __init__(self):
