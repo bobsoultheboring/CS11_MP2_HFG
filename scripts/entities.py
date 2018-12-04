@@ -22,7 +22,7 @@ class ItemSpawning():
 
         #location of all the individual spawners
         #self.locations = [[300,510]] #for debug
-        self.locations = [[810,120],[390,270],[810,360],[600,290]]
+        self.locations = [[810,120],[390,270],[810,360],[600,300]]
         self.spawnerList = []
 
         for i in self.locations:
