@@ -16,9 +16,10 @@ def updateItemsUI(dt):
     interface.slot_1.update()
     interface.slot_2.update()
     interface.slot_3.update()
-    
+
+changeScore = False
+
 def firstFloor():
-    global player
     firstFloorBackground = pyglet.sprite.Sprite(img=assets.firstFloor_img,
                                       x=gameWindow.width//2,y=gameWindow.height//2)
 
@@ -27,12 +28,21 @@ def firstFloor():
     gameWindow.push_handlers(entities.player.key_handler)
 
     def updatePlayerFirst(dt):
+        global changeScore
         entities.player.update()
+        entities.keyCommand.update()
         if entities.player.dead == True:
             gameWindow.remove_handlers(entities.player.key_handler)
+            gameWindow.push_handlers(entities.keyCommand.key_handler)
         for obj in playerStats:
             if obj.continueUpdate == True:
                 obj.update()
+        #Restarts game if the player chooses to
+        if entities.keyCommand.retry == True:
+            pyglet.app.exit()
+        #Activates changing of high score
+        if entities.player.newHighScore == True:
+            changeScore = True
 
     def updateEnemyFirst(dt):
         entities.spawner_first.update()
@@ -56,3 +66,8 @@ def firstFloor():
 	
 if __name__ == "__main__":
     firstFloor()
+
+if changeScore == True:
+    scoreFile = open('high_score.txt','w')
+    scoreFile.write(entities.player_score.Score_Label.text)
+    scoreFile.close()

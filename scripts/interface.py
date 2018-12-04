@@ -1,5 +1,5 @@
 import pyglet, random
-import assets, CookBook
+import assets, CookBook, entities
 
 inventory = ['null','null','null']
 display_batch = pyglet.graphics.Batch()
@@ -8,10 +8,18 @@ class Countdown(object):
     def __init__(self, time):
         self.time = time
         self.timeScore = 30
-        self.time_display = pyglet.text.Label('{}:{}'.format(time//60, time%60),
+        self.time_display = pyglet.text.Label(('8:00'),
             font_name = 'Arial Black',
             font_size = 50,
             x = (1280 - 100) , y = (720 - 100),
+            color = (0,0,0,255),
+            anchor_x = 'right', anchor_y = 'center',
+            batch = display_batch)
+        #AM/PM label
+        self.timePartition = pyglet.text.Label('PM',
+            font_name = 'Arial Black',
+            font_size = 20,
+            x = (1280 - 100) , y = (720 - 60),
             color = (0,0,0,255),
             anchor_x = 'right', anchor_y = 'center',
             batch = display_batch)
@@ -20,11 +28,14 @@ class Countdown(object):
         #For scoring:
         self.timeScore -= 1
 
-
-        self.time -= 1
+        self.time += 1
         self.mins = self.time//60
         self.secs = self.time%60
-        if self.secs > 10:
+        if self.mins >= 12:
+            self.timePartition.text = 'AM'
+        if self.mins > 12:
+            self.mins -= 12 
+        if self.secs >= 10:
             self.time_display.text = '{}:{}'.format(self.mins, self.secs)
         else:
             self.time_display.text = '{}:0{}'.format(self.mins, self.secs)
@@ -61,7 +72,6 @@ class FoodCrave():
             return random.choice(CookBook.Food)
 
     def crave(self):
-        print(CookBook.Recipe)
         self.Priority += 1
         self.To_Prepare = self.Get_FoodDrink(self.Priority)
         self.Ingredients = CookBook.Recipe.get(self.To_Prepare)[1]
@@ -118,7 +128,6 @@ class CravingBar(object):
             self.Slots.append(pyglet.sprite.Sprite(img=_1, x=self.temp_x, y=self.temp_y, batch = display_batch))
             self.temp_x += assets.IngredientSlot_img.width//2
             self.temp_x += 7
-        print('Slots: ',self.Slots)
         
 class Inventory_Slot():
     '''Controls the CONTENTS of the inventory slots. 
@@ -132,7 +141,7 @@ class Inventory_Slot():
         self.item_description = pyglet.text.Label('',
                                 font_name='Times New Roman',
                                 font_size=10,
-                                x=self.x, y=160, color = (0,0,0,255),
+                                x=self.x, y=150, color = (0,0,0,255),
                                 anchor_x='center', anchor_y='center', batch=display_batch)
     def update(self):
         self.current_item_anchor = inventory[self.anchorindex]
@@ -140,8 +149,9 @@ class Inventory_Slot():
         assets.center_image(self.current_item)
         self.item_display = pyglet.sprite.Sprite(img=self.current_item,x=self.x, y=75, batch=display_batch)
         if self.current_item_anchor == "null":
-            self.item_description.text = "no item held"
-        self.item_description.text = self.current_item_anchor
+            self.item_description.text = ''
+        else:
+            self.item_description.text = self.current_item_anchor
 		
 
 def draw_containers(batch = None):
@@ -167,6 +177,8 @@ def inventory_update_subtract(item):
 def item_get(itemEntity):
     if ("null" in inventory):
         inventory_update_add(itemEntity.itemName)
+        entities.itemSpawner_first.item_list[entities.itemSpawner_first.item_list.index(entities.player.nearItems[0])].delete()
+        entities.itemSpawner_first.item_list[entities.itemSpawner_first.item_list.index(entities.player.nearItems[0])] = []
         print(inventory) ####### FOR DEBUG
         actionText.text = 'You picked up the {}'.format(itemEntity.itemName)
     else:
@@ -181,7 +193,7 @@ actionText = pyglet.text.Label('',
                                x=1055, y=200, color = (0,0,0,255),
                                anchor_x='center', anchor_y='center', batch=display_batch)
 inventory_slots = draw_containers(batch=display_batch)
-Timer = Countdown(time = 10)
+Timer = Countdown(time = 480)
 Craving = FoodCrave()
 CurrentCraving = CravingBar()
 Craving.crave()
