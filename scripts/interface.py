@@ -8,7 +8,7 @@ class Countdown(object):
     def __init__(self, time):
         self.time = time
         self.timeScore = 30
-        self.time_display = pyglet.text.Label('{}:{}'.format(time//60, time%60),
+        self.time_display = pyglet.text.Label(('8:00'),
             font_name = 'Arial Black',
             font_size = 50,
             x = (1280 - 100) , y = (720 - 100),
