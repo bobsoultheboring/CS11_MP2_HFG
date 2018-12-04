@@ -1,4 +1,4 @@
-import pyglet, random, os
+import pyglet, random
 import assets, interface, CookBook
 from pyglet.window import key
 
@@ -12,9 +12,7 @@ class ItemSpawning():
     def __init__(self,batch,*args,**kwargs):
         super().__init__(*args,**kwargs)
 
-        self.spawn = False
-
-        self.timer = 0
+        self.timer = []
         self.wait = 15
 
         self.batch = batch
@@ -24,11 +22,12 @@ class ItemSpawning():
 
         #location of all the individual spawners
         #self.locations = [[300,510]] #for debug
-        self.locations = [[300,510],[420,300]]
+        self.locations = [[300,510],[390,270]]
         self.spawnerList = []
 
         for i in self.locations:
             self.item_list.append([])
+            self.timer.append(0)
         
         for spawner in self.locations:
             self.spawnerList.append(pyglet.sprite.Sprite(img=assets.spawner_img,x=spawner[0],y=spawner[1],batch=batch))
@@ -36,15 +35,13 @@ class ItemSpawning():
     #Update function to spawn items
     #Spawns a monster once every eight 'turns'
     def update(self):
-        if self.timer < self.wait:
-            self.timer += 1
-        elif self.timer == self.wait:
-            for spawnInd in range(len(self.item_list)):
-                print('need here: ',spawnInd)
-                if self.item_list[spawnInd] == []:
+        for spawnInd in range(len(self.item_list)):
+            if self.item_list[spawnInd] == []:
+                self.timer[spawnInd] += 1
+                if self.timer[spawnInd] == self.wait:
                     print('spawn at: ', spawnInd)
                     self.spawnItem(spawnInd)
-            self.timer = 0
+                    self.timer[spawnInd] = 0
 
 	#Decides which monster to spawn, spawns them in one of the spawner objects
     def spawnItem(self,itemInd):
@@ -515,16 +512,20 @@ class Player(pyglet.sprite.Sprite):
         self.moveX,self.moveY = 0,0
         self.coord = [self.x,self.y]
 
-        self.satiety = 100.0
+        self.satiety = 1.0
         self.health = 10.0
         self.damage = 1
 
         self.dead = False
+        self.retry = False
 
         self.nearItems = []
         self.onCooker = False
 
         self.nearbyTiles = [[self.x-30,self.y],[self.x+30,self.y],[self.x,self.y-30],[self.x,self.y+30]]
+
+        self.highScore = '0'
+        self.newHighScore = False
 
     def nearItemFinder(self):
         self.nearItems = []
@@ -569,6 +570,7 @@ class Player(pyglet.sprite.Sprite):
                 self.moveX = 0
                 self.image=assets.playerB_img
                 moveLargeEnemies()
+            #Handles item consumption/use
             elif self.key_handler[key._1]:
                 if self.onCooker == True and interface.inventory[0] != 'null':
                     CookBook.itemCook(interface.inventory[0])
@@ -587,7 +589,7 @@ class Player(pyglet.sprite.Sprite):
                 elif interface.inventory[2] != 'null':
                     CookBook.itemEat(interface.inventory[2])
                 interface.inventory_update_subtract(interface.inventory[2])
-                
+            #Handles item pickup
             elif self.key_handler[key.SPACE]:
                     if itemNearby:
                         interface.item_get(self.nearItems[0])
@@ -666,7 +668,41 @@ class Player(pyglet.sprite.Sprite):
     #Handles player death
     def death(self):
         self.dead = True
+        interface.actionText.text = "You passed out."
+        self.read_Score()
+        self.highscorelabel = pyglet.text.Label(text = 'High Score',font_name='Arial Black',font_size=15, x=1055, y=350, 
+            color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+        if int(player_score.Score_Label.text) > int(self.highScore):
+            self.High_Score = pyglet.text.Label(text = player_score.Score_Label.text,font_name='Arial Black',font_size=40, x=1055, y=400, 
+                color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+            self.NEWlabel = pyglet.text.Label(text = 'NEW',font_name='Arial Black',font_size=30, x=1055, y=450, 
+                color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+            self.newHighScore = True
+        elif int(player_score.Score_Label.text) <= int(self.highScore):
+            self.High_Score = pyglet.text.Label(text = self.highScore,font_name='Arial Black',font_size=40, x=1055, y=400, 
+                color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
+        rToRespawn = pyglet.text.Label('Hold R to respawn',
+                               font_name='Times New Roman',
+                               font_size=14,
+                               x=1055, y=175, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=entity_batch)
         print('You Died')
+
+    def read_Score(self):
+        scoreFile = open('high_score.txt','r')
+        self.highScore = scoreFile.readline().rsplit()[0]
+        scoreFile.close()
+
+class Key_Command():
+    def __init__(self,*args,**kwargs):
+
+        self.key_handler = key.KeyStateHandler()
+        self.retry = False
+
+    def update(self):
+        if self.key_handler[key.R]:
+            self.retry = True
+
 
 class SP_Bar(pyglet.sprite.Sprite):
     def __init__(self,*args,**kwargs):
@@ -709,6 +745,7 @@ player_score = Scoring()
 
 obstacles_first = ObstacleGroup(obstacleFile='obstacles_first.txt',batch=entity_batch)
 spawner_first = EnemySpawners(obstacleID=obstacles_first,batch=entity_batch)   
-itemSpawner_first = ItemSpawning(batch = entity_batch) 
+itemSpawner_first = ItemSpawning(batch = entity_batch)
+keyCommand = Key_Command(batch = entity_batch) 
 #player pos: x=480,y=150
 player = Player(obstacleID=obstacles_first,spawnerID=spawner_first,itemID=itemSpawner_first,x=480,y=150,batch=entity_batch)
