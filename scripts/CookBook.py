@@ -65,13 +65,6 @@ Recipe = {
 }
 
 def itemEat(item):
-    # if(item in Drinks or item in Food):
-    #     entities.player.satiety += 40
-    #     interface.actionText.text = "Finally. Some good fucking food."
-        
-    #     #Score:
-    #     entities.player_score.addScore(100 * (interface.Timer.timeScore//6)) #Perfect score is 500
-    #     interface.Timer.timeScore = 30
     if(item in interface.Craving.ingreds):
         #Makes sure satiety doesn't go above 100
         if entities.player.satiety + 5 >= 100:
