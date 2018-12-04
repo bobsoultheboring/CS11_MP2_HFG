@@ -204,6 +204,36 @@ actionText = pyglet.text.Label('',
                                font_size=14,
                                x=1055, y=200, color = (0,0,0,255),
                                anchor_x='center', anchor_y='center', batch=display_batch)
+tutText1 = pyglet.text.Label('WASD - Movement',
+                               font_name='Times New Roman',
+                               font_size=10,
+                               x=123, y=700, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=display_batch)
+tutText1 = pyglet.text.Label('1,2,3 - Item Use',
+                               font_name='Times New Roman',
+                               font_size=10,
+                               x=123, y=680, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=display_batch)
+tutText1 = pyglet.text.Label('Space - Pick up Item',
+                               font_name='Times New Roman',
+                               font_size=10,
+                               x=123, y=660, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=display_batch)
+tutText1 = pyglet.text.Label('Use Items at kitchen (upper right) to cook',
+                               font_name='Times New Roman',
+                               font_size=10,
+                               x=123, y=640, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=display_batch)
+tutText1 = pyglet.text.Label('Satisfy  cravings to restore Satiety',
+                               font_name='Times New Roman',
+                               font_size=10,
+                               x=123, y=620, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=display_batch)
+tutText1 = pyglet.text.Label('Try not to die.',
+                               font_name='Times New Roman',
+                               font_size=10,
+                               x=123, y=600, color = (0,0,0,255),
+                               anchor_x='center', anchor_y='center', batch=display_batch)
 inventory_slots = draw_containers(batch=display_batch)
 Timer = Countdown(time = 480)
 Craving = FoodCrave()
