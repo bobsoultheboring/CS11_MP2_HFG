@@ -1,10 +1,10 @@
 import pyglet
 import interface, entities
 
-#Ingredients = ['ham', 'cheese', 'mayonnaise', 'bread', 'chicken', 'fish', 
-#    'soy sauce', 'garlic', 'salt & pepper', 'butter', 'leek', 'meat', 'parsley', 
-#    'potatoes', 'onion', 'eggs', 'flour', 'sugar', 'milk', 'chocolate chips', 'pasta', 
-#    'oranges', 'raspberries', 'strawberries', 'banana', 'lime', 'vanilla', 'mangoes']
+#Ingredients = ['ham', 'cheese', 'bread', 'chicken', 'fish', 
+#    'soy sauce', 'garlic', 'salt & pepper', 'butter', 'meat', 
+#    'onion', 'eggs', 'flour', 'sugar', 'milk', 'chocolate chips', 'pasta', 
+#    'oranges', 'raspberries', 'strawberries', 'banana', 'lime', 'mangoes']
 Ingredients = ['ing1', 'ing2', 'ing3'] #removed 'null' for now
 #########################################################################################
 Drinks = ['orange juice', 'mango shake', 'four-fruit shake', 'strawberry cheesecake shake', 
@@ -23,31 +23,31 @@ Recipe = {
                   ['ing1', 'ing2', 'ing3']),
     #Sandwich
     'ham sandwich' : ('microwave',
-                        ['bread', 'ham', 'cheese', 'mayonnaise']), 
+                        ['bread', 'ham', 'cheese']), 
     'chicken sandwich' : ('microwave',
-                        ['bread', 'chicken', 'mayonnaise']), 
+                        ['bread', 'chicken']), 
 
     #Fish
     'baked fish' : ('oven',
                         ['fish', 'soy sauce', 'garlic', 'salt & pepper']), 
     'salt crust' : ('oven',
-                        ['fish', 'salt & pepper', 'salt & pepper', 'butter', 'garlic', 'leek']), 
+                        ['fish', 'salt & pepper', 'salt & pepper', 'garlic']), 
 
     #Meat
     'skillet steak' : ('stove',
-                        ['meat', 'garlic', 'salt & pepper', 'butter', ' parsley', 'potatoes']),
+                        ['meat', 'garlic', 'salt & pepper', 'butter']),
     'pork chop' : ('stove',
                         ['meat', 'garlic', 'salt & pepper', 'onion']), 
 
     #Pastries
     'basic cupcakes' : ('oven',
-                        ['eggs', 'flour', 'sugar', 'butter', 'milk']), 
+                        ['eggs', 'flour', 'sugar', 'butter']), 
     'basic cookies' : ('oven',
-                        ['eggs', 'flour', 'sugar', 'butter', 'chocolate chips']), 
+                        ['eggs', 'flour', 'sugar', 'chocolate chips']), 
 
     #Pasta
     'stir fry' : ('stove',
-                        ['pasta', 'chicken', 'soy sauce', 'garlic', 'parsley']), 
+                        ['pasta', 'soy sauce', 'garlic']), 
     'mac and cheese' : ('stove',
                         ['pasta', 'milk', 'cheese']), 
 
@@ -57,11 +57,11 @@ Recipe = {
     'mango juice' : ('blender',
                         ['sugar', 'milk', 'mangoes']),
     'strawberry cheesecake shake' : ('blender',
-                        ['sugar', 'cheese', 'strawberries', 'vanilla']),
+                        ['sugar', 'cheese', 'strawberries']),
     'four-fruit shake' : ('blender',
-                        ['oranges', 'raspberries', 'strawberries', 'banana', 'sugar']),
+                        ['oranges', 'raspberries', 'strawberries', 'banana']),
     'home-made cola' : ('blender',
-                        ['sugar', 'sugar', 'lime', 'lime', 'vanilla', 'oranges'])
+                        ['sugar', 'sugar', 'lime', 'lime'])
 }
 
 def itemEat(item):
