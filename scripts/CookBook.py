@@ -68,9 +68,17 @@ def itemEat(item):
     if(item in Drinks or item in Food):
         entities.player.satiety += 40
         interface.actionText.text = "Finally. Some good fucking food."
+        
+        #Score:
+        entities.player_score.addScore(100 * (interface.Timer.timeScore//6)) #Perfect score is 500
+        interface.Timer.timeScore = 30
     elif(item in interface.Craving.ingreds):
         entities.player.satiety += 5
         interface.actionText.text = "Needs lamb sauce. And other ingredients."
+
+        #Score:
+        entities.player_score.addScore((interface.Timer.timeScore//6)*2) #"Perfect" score is 10
+        interface.Timer.timeScore = 30
     else:
         interface.actionText.text = "You ate it. Nothing happened."
 
@@ -78,6 +86,10 @@ def itemCook(item):
     if(item in Drinks or item in Food):
         entities.player.satiety += 40
         interface.actionText.text = "You ate the thing, instead of cooking it more."
+		
+		#Score:
+        entities.player_score.addScore(20 * (interface.Timer.timeScore//6)) #Perfect score is 100
+        interface.Timer.timeScore = 30
     elif(item in interface.Craving.ingreds):
         interface.actionText.text = "You added the {} into the cooking device."
         #Deletes the sprite of the ingredient
