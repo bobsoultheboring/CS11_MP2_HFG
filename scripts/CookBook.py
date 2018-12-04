@@ -23,57 +23,61 @@ Recipe = {
                   ['ing1', 'ing2', 'ing3']),
     #Sandwich
     'ham sandwich' : ('microwave',
-                        ('bread', 'ham', 'cheese', 'mayonnaise')), 
+                        ['bread', 'ham', 'cheese', 'mayonnaise']), 
     'chicken sandwich' : ('microwave',
-                        ('bread', 'chicken', 'mayonnaise')), 
+                        ['bread', 'chicken', 'mayonnaise']), 
 
     #Fish
     'baked fish' : ('oven',
-                        ('fish', 'soy sauce', 'garlic', 'salt & pepper')), 
+                        ['fish', 'soy sauce', 'garlic', 'salt & pepper']), 
     'salt crust' : ('oven',
-                        ('fish', 'salt & pepper', 'salt & pepper', 'butter', 'garlic', 'leek')), 
+                        ['fish', 'salt & pepper', 'salt & pepper', 'butter', 'garlic', 'leek']), 
 
     #Meat
     'skillet steak' : ('stove',
-                        ('meat', 'garlic', 'salt & pepper', 'butter', ' parsley', 'potatoes')),
+                        ['meat', 'garlic', 'salt & pepper', 'butter', ' parsley', 'potatoes']),
     'pork chop' : ('stove',
-                        ('meat', 'garlic', 'salt & pepper', 'onion')), 
+                        ['meat', 'garlic', 'salt & pepper', 'onion']), 
 
     #Pastries
     'basic cupcakes' : ('oven',
-                        ('eggs', 'flour', 'sugar', 'butter', 'milk')), 
+                        ['eggs', 'flour', 'sugar', 'butter', 'milk']), 
     'basic cookies' : ('oven',
-                        ('eggs', 'flour', 'sugar', 'butter', 'chocolate chips')), 
+                        ['eggs', 'flour', 'sugar', 'butter', 'chocolate chips']), 
 
     #Pasta
     'stir fry' : ('stove',
-                        ('pasta', 'chicken', 'soy sauce', 'garlic', 'parsley')), 
+                        ['pasta', 'chicken', 'soy sauce', 'garlic', 'parsley']), 
     'mac and cheese' : ('stove',
-                        ('pasta', 'milk', 'cheese')), 
+                        ['pasta', 'milk', 'cheese']), 
 
     #Drinks
     'orange juice' : ('blender',
-                        ('sugar', 'oranges')),
+                        ['sugar', 'oranges']),
     'mango juice' : ('blender',
-                        ('sugar', 'milk', 'mangoes')),
+                        ['sugar', 'milk', 'mangoes']),
     'strawberry cheesecake shake' : ('blender',
-                        ('sugar', 'cheese', 'strawberries', 'vanilla')),
+                        ['sugar', 'cheese', 'strawberries', 'vanilla']),
     'four-fruit shake' : ('blender',
-                        ('oranges', 'raspberries', 'strawberries', 'banana', 'sugar')),
+                        ['oranges', 'raspberries', 'strawberries', 'banana', 'sugar']),
     'home-made cola' : ('blender',
-                        ('sugar', 'sugar', 'lime', 'lime', 'vanilla', 'oranges'))
+                        ['sugar', 'sugar', 'lime', 'lime', 'vanilla', 'oranges'])
 }
 
 def itemEat(item):
-    if(item in Drinks or item in Food):
-        entities.player.satiety += 40
-        interface.actionText.text = "Finally. Some good fucking food."
+    # if(item in Drinks or item in Food):
+    #     entities.player.satiety += 40
+    #     interface.actionText.text = "Finally. Some good fucking food."
         
-        #Score:
-        entities.player_score.addScore(100 * (interface.Timer.timeScore//6)) #Perfect score is 500
-        interface.Timer.timeScore = 30
-    elif(item in interface.Craving.ingreds):
-        entities.player.satiety += 5
+    #     #Score:
+    #     entities.player_score.addScore(100 * (interface.Timer.timeScore//6)) #Perfect score is 500
+    #     interface.Timer.timeScore = 30
+    if(item in interface.Craving.ingreds):
+        #Makes sure satiety doesn't go above 100
+        if entities.player.satiety + 5 >= 100:
+            entities.player.satiety = 100
+        else:
+            entities.player.satiety += 5
         interface.actionText.text = "Needs lamb sauce. And other ingredients."
 
         #Score:
@@ -83,27 +87,28 @@ def itemEat(item):
         interface.actionText.text = "You ate it. Nothing happened."
 
 def itemCook(item):
-    if(item in Drinks or item in Food):
-        entities.player.satiety += 40
-        interface.actionText.text = "You ate the thing, instead of cooking it more."
-		
-		#Score:
-        entities.player_score.addScore(20 * (interface.Timer.timeScore//6)) #Perfect score is 100
-        interface.Timer.timeScore = 30
-    elif(item in interface.Craving.ingreds):
+    if(item in interface.Craving.ingreds):
         interface.actionText.text = "You added the {} into the cooking device."
         #Deletes the sprite of the ingredient
         print('delete',interface.Craving.Ingredients.index(item))
         interface.CurrentCraving.Slots[interface.Craving.ingreds.index(item)].delete()
         interface.Craving.ingreds[interface.Craving.ingreds.index(item)] = 'None'
 
-        #If all the ingredients become 'None', restart craving, should also add item to inventory
+        #If all the ingredients become 'None', restart craving, increases satiety, and adds score
         noneNum = 0
         for i in interface.Craving.ingreds:
             if i == 'None':
                 noneNum += 1
             if noneNum == len(interface.Craving.ingreds):
-                #Add function to add item to inventory
+                interface.actionText.text = "Finally. Some good fucking food."
+                if entities.player.satiety + 40 >= 100:
+                    entities.player.satiety = 100
+                else:
+                    entities.player.satiety += 40
+                #Score:
+                entities.player_score.addScore(20 * (interface.Timer.timeScore//6)) #Perfect score is 100
+                interface.Timer.timeScore = 30
+
                 interface.CurrentCraving.Slots = [] #Deletes the NoneType sprites in Slots
                 interface.Craving.crave()
     else:
