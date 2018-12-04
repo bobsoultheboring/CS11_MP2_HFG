@@ -7,6 +7,7 @@ display_batch = pyglet.graphics.Batch()
 class Countdown(object):
     def __init__(self, time):
         self.time = time
+        self.timeScore = 30
         self.time_display = pyglet.text.Label('{}:{}'.format(time//60, time%60),
             font_name = 'Arial Black',
             font_size = 50,
@@ -16,6 +17,10 @@ class Countdown(object):
             batch = display_batch)
  
     def update(self):
+        #For scoring:
+        self.timeScore -= 1
+
+
         self.time -= 1
         self.mins = self.time//60
         self.secs = self.time%60

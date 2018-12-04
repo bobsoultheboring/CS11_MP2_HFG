@@ -645,10 +645,19 @@ class Player(pyglet.sprite.Sprite):
                 self.death()
             if other_object.health <= 0:
                 if other_object.monsterType == 'small':
+                    #Scoring:
+                    player_score.addScore(10)
+
                     self.spawner.monsterCount_small -= 1
                 elif other_object.monsterType == 'medium':
+                    #Scoring:
+                    player_score.addScore(30)
+
                     self.spawner.monsterCount_medium -= 1
                 elif other_object.monsterType == 'large':
+                    #Scoring:
+                    player_score.addScore(50)
+
                     self.spawner.monsterCount_large -= 1
 
                 del(self.spawner.enemy_coord[enemyindex])
@@ -688,9 +697,21 @@ class HP_Bar(pyglet.sprite.Sprite):
         else:
             self.continueUpdate = False
 
+class Scoring:
+    def __init__(self):
+        self.Score_Label = pyglet.text.Label(text = '000000',font_name='Arial Black',font_size=20, x = (1280 - 100) , y = (720 - 150) , 
+            color = (100,0,0,255), anchor_x = 'right', anchor_y = 'center', batch=entity_batch)
+        self.Score = 0
+
+    def addScore(self,points):
+        self.Score += points
+        self.Score_Label.text = '0'*(6-len(str(self.Score)))+'{}'.format(self.Score)
+
 satiety = SP_Bar(x=125,y=205,batch=entity_batch)
 satietyBar = pyglet.sprite.Sprite(img=assets.satietyBar_img,x=125,y=203,batch=entity_batch)
 health = HP_Bar(x=125,y=75,batch=entity_batch)
+
+player_score = Scoring()
 
 obstacles_first = ObstacleGroup(obstacleFile='obstacles_first.txt',batch=entity_batch)
 spawner_first = EnemySpawners(obstacleID=obstacles_first,batch=entity_batch)   
