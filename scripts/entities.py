@@ -681,7 +681,7 @@ class Player(pyglet.sprite.Sprite):
         elif int(player_score.Score_Label.text) <= int(self.highScore):
             self.High_Score = pyglet.text.Label(text = self.highScore,font_name='Arial Black',font_size=40, x=1055, y=400, 
                 color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
-        rToRespawn = pyglet.text.Label('Hold R to respawn',
+        rToRespawn = pyglet.text.Label('Hold R to exit.',
                                font_name='Times New Roman',
                                font_size=14,
                                x=1055, y=175, color = (0,0,0,255),
