@@ -55,7 +55,6 @@ def firstFloor():
             pyglet.clock.unschedule(updateEnemyFirst)
             pyglet.clock.unschedule(updateItemsUI)
                 
-
     @gameWindow.event
     def on_draw():
         gameWindow.clear()

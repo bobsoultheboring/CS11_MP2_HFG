@@ -13,6 +13,8 @@ class ItemSpawning():
         super().__init__(*args,**kwargs)
 
         self.timer = []
+        self.count = 0
+        self.spawnTimer = 0
         self.wait = 15
 
         self.batch = batch
@@ -42,13 +44,32 @@ class ItemSpawning():
                     print('spawn at: ', spawnInd)
                     self.spawnItem(spawnInd)
                     self.timer[spawnInd] = 0
+        # if self.spawnTimer < 1:
+        #     self.spawnTimer += 1
+        # elif self.spawnTimer == 1:
+        #     print('Time to spawn!')
+        #     print(self.timer,self.count,self.timer[self.count])
+        #     if self.timer[self.count] > self.wait:
+        #         print('spawn at: ', self.count)
+        #         self.spawnItem(self.count)
+        #         self.timer[self.count] = 0
+        #         self.count += 1
+        #     self.spawnTimer = 0
 
 	#Decides which monster to spawn, spawns them in one of the spawner objects
     def spawnItem(self,itemInd):
-        pickSpawn = random.choice(CookBook.Ingredients)
+        print('Spawning!')
+        pickSpawn = ''
+        if len(interface.Craving.prioIngreds) > 0:
+            pickSpawn = random.choice(interface.Craving.prioIngreds)
+            print(interface.Craving.prioIngreds)
+            del interface.Craving.prioIngreds[interface.Craving.prioIngreds.index(pickSpawn)]
+        else:
+            pickSpawn = random.choice(CookBook.Ingredients)
+        interface.Craving.item_names.append(pickSpawn)
         self.item_list[itemInd] = ItemEntity(img=assets.items_img[assets.items_img.index(pyglet.resource.image('{}.png'.format(pickSpawn)))] , 
             x=self.locations[itemInd][0], y=self.locations[itemInd][1], name = pickSpawn, spawnerID = itemSpawner_first,batch = self.batch)
-        print(self.item_list)
+        print('item_list: ',self.item_list)
         
 class ItemEntity(pyglet.sprite.Sprite):
     def __init__(self,name,spawnerID,*args,**kwargs):
@@ -114,7 +135,7 @@ class EnemySpawners():
         #Hard difficulty   - 7 monsers in total, should have at least 2 slugs and 1 tallmen
         #                  - 50% chance to spawn slimes, 40% chance to spawn slugs, 10% change to spawn tallmen
 
-        self.difficulty = 'hard'
+        self.difficulty = 'normal'
         self.spawn = False
 
         self.timer = 0
@@ -530,8 +551,9 @@ class Player(pyglet.sprite.Sprite):
     def nearItemFinder(self):
         self.nearItems = []
         for n in itemSpawner_first.item_list:
-            if self.iSpawner.item_coord[self.iSpawner.item_list.index(n)] in self.nearbyTiles and n != []:
-                self.nearItems.append(n)
+            if n != []:
+                if self.iSpawner.item_coord[self.iSpawner.item_list.index(n)] in self.nearbyTiles:
+                    self.nearItems.append(n)
 
     def update(self):
         #Check if there are gettable items nearby
@@ -623,6 +645,14 @@ class Player(pyglet.sprite.Sprite):
             if self.health <= 0:
                 self.death()
 
+            #Changes difficulty based on satiety
+            if self.satiety >= 80: 
+                self.spawner.difficulty = 'normal'
+            elif 80 > self.satiety >= 65:
+                self.spawner.difficulty = 'medium'
+            elif 65 > self.satiety >= 45:
+                self.spawner.difficulty = 'hard'
+
     #Reduces HP from both enemy and player based on their respective damages
     #Calls deletion of enemy if their HP reaches 0
     #Calls death of player if player HP reaches 0
@@ -681,7 +711,7 @@ class Player(pyglet.sprite.Sprite):
         elif int(player_score.Score_Label.text) <= int(self.highScore):
             self.High_Score = pyglet.text.Label(text = self.highScore,font_name='Arial Black',font_size=40, x=1055, y=400, 
                 color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
-        rToRespawn = pyglet.text.Label('Hold R to exit.',
+        rToRespawn = pyglet.text.Label('Hold R to save score and exit',
                                font_name='Times New Roman',
                                font_size=14,
                                x=1055, y=175, color = (0,0,0,255),
@@ -706,7 +736,7 @@ class Player(pyglet.sprite.Sprite):
         elif int(player_score.Score_Label.text) <= int(self.highScore):
             self.High_Score = pyglet.text.Label(text = self.highScore,font_name='Arial Black',font_size=40, x=1055, y=400, 
                 color = (100,0,0,255), anchor_x = 'center', anchor_y = 'center', batch=entity_batch)
-        rToRespawn = pyglet.text.Label('Hold R to respawn',
+        rToRespawn = pyglet.text.Label('Hold R to save score & exit',
                                font_name='Times New Roman',
                                font_size=14,
                                x=1055, y=175, color = (0,0,0,255),
