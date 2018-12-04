@@ -7,6 +7,7 @@ display_batch = pyglet.graphics.Batch()
 class Countdown(object):
     def __init__(self, time):
         self.time = time
+        self.timeScore = 30
         self.time_display = pyglet.text.Label('{}:{}'.format(time//60, time%60),
             font_name = 'Arial Black',
             font_size = 50,
@@ -16,6 +17,10 @@ class Countdown(object):
             batch = display_batch)
  
     def update(self):
+        #For scoring:
+        self.timeScore -= 1
+
+
         self.time -= 1
         self.mins = self.time//60
         self.secs = self.time%60
@@ -25,14 +30,12 @@ class Countdown(object):
             self.time_display.text = '{}:0{}'.format(self.mins, self.secs)
  
         return self.time
-       
-
 
 class FoodCrave():
     def __init__(self):
         #This is a sample counter, probably to be declared and modified somewhere else (e.g. entities). 
         #If implemented, it should increment after the player manages to complete a food.
-        self.Priority = 1
+        self.Priority = 0
 
         #Randomly picked food (if priority%3 != 0), or drink (if priority%3 == 0)
         self.To_Prepare = self.Get_FoodDrink(self.Priority)
@@ -41,6 +44,11 @@ class FoodCrave():
         #Ingredients that have been added to the respective "machine" can be removed from this list
         self.Ingredients = CookBook.Recipe.get(self.To_Prepare)[1]
         print(self.To_Prepare, self.Ingredients)
+
+        #Edit this to preserve Cookbook's dictionary
+        self.ingreds = []
+        for ing in self.Ingredients:
+            self.ingreds.append(ing)
 
     def Get_FoodDrink(self,Priority):
         #This is a counter, probably to be declared and modified somewhere else (e.g. entities). 
@@ -53,9 +61,13 @@ class FoodCrave():
             return random.choice(CookBook.Food)
 
     def crave(self):
+        print(CookBook.Recipe)
         self.Priority += 1
         self.To_Prepare = self.Get_FoodDrink(self.Priority)
         self.Ingredients = CookBook.Recipe.get(self.To_Prepare)[1]
+        self.ingreds = []
+        for ing in self.Ingredients:
+            self.ingreds.append(ing)
         print(self.To_Prepare, self.Ingredients)
         CurrentCraving.Draw_Craving()
         CurrentCraving.Draw_Items_in_Slots(self.Ingredients)
@@ -70,6 +82,7 @@ class CravingBar(object):
         #Draws craving plate and arrow beside the ingredients
         self.cravePlate = pyglet.sprite.Sprite(assets.CravingPlate_img,x = 1280//2-350,y=640,batch=display_batch)
         self.craveArrow = pyglet.sprite.Sprite(assets.CravingArrow_img,x = 1280//2-270,y=650,batch=display_batch)
+        self.cookSpot = pyglet.sprite.Sprite(assets.cookSpot_img,x = 1280//2-240,y=650,batch=display_batch)
         self.craving = pyglet.sprite.Sprite(assets.items_img[0],x = 1280//2-350,y=660,batch=display_batch)
 
     def Draw_Craving(self):
@@ -95,7 +108,6 @@ class CravingBar(object):
     def Draw_Items_in_Slots(self, ingredients):
         self.temp_x = 1280//2-50
         self.temp_x -= ((14*2) + (assets.IngredientSlot_img.width*3))-7
-
         for i in (ingredients):
             _1 = assets.items_img[CookBook.Ingredients.index(i) + 1] 
             _1.anchor_x = _1.width//2
@@ -106,6 +118,7 @@ class CravingBar(object):
             self.Slots.append(pyglet.sprite.Sprite(img=_1, x=self.temp_x, y=self.temp_y, batch = display_batch))
             self.temp_x += assets.IngredientSlot_img.width//2
             self.temp_x += 7
+        print('Slots: ',self.Slots)
         
 class Inventory_Slot():
     '''Controls the CONTENTS of the inventory slots. 

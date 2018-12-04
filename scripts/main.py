@@ -38,7 +38,7 @@ def firstFloor():
         entities.spawner_first.update()
         for obj in entities.spawner_first.enemy_list:
             if obj.moveWithPlayer == False:
-                obj.update()
+                obj.update()    
 
     @gameWindow.event
     def on_draw():

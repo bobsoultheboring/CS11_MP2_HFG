@@ -20,7 +20,7 @@ Recipe = {
 
     #Salad
     'test food' : ('pot',
-                  ('ing1', 'ing2', 'ing3')),
+                  ['ing1', 'ing2', 'ing3']),
     #Sandwich
     'ham sandwich' : ('microwave',
                         ('bread', 'ham', 'cheese', 'mayonnaise')), 
@@ -68,9 +68,17 @@ def itemEat(item):
     if(item in Drinks or item in Food):
         entities.player.satiety += 40
         interface.actionText.text = "Finally. Some good fucking food."
-    elif(item in Ingredients):
+        
+        #Score:
+        entities.player_score.addScore(100 * (interface.Timer.timeScore//6)) #Perfect score is 500
+        interface.Timer.timeScore = 30
+    elif(item in interface.Craving.ingreds):
         entities.player.satiety += 5
         interface.actionText.text = "Needs lamb sauce. And other ingredients."
+
+        #Score:
+        entities.player_score.addScore((interface.Timer.timeScore//6)*2) #"Perfect" score is 10
+        interface.Timer.timeScore = 30
     else:
         interface.actionText.text = "You ate it. Nothing happened."
 
@@ -78,10 +86,25 @@ def itemCook(item):
     if(item in Drinks or item in Food):
         entities.player.satiety += 40
         interface.actionText.text = "You ate the thing, instead of cooking it more."
-    elif(item in Ingredients):
+		
+		#Score:
+        entities.player_score.addScore(20 * (interface.Timer.timeScore//6)) #Perfect score is 100
+        interface.Timer.timeScore = 30
+    elif(item in interface.Craving.ingreds):
         interface.actionText.text = "You added the {} into the cooking device."
-        del interface.Craving.Ingredients[interface.Craving.Ingredients.index(item)]
-        if(len(interface.Craving.Ingredients) == 0):
-            intergace.Craving.crave()
+        #Deletes the sprite of the ingredient
+        print('delete',interface.Craving.Ingredients.index(item))
+        interface.CurrentCraving.Slots[interface.Craving.ingreds.index(item)].delete()
+        interface.Craving.ingreds[interface.Craving.ingreds.index(item)] = 'None'
+
+        #If all the ingredients become 'None', restart craving, should also add item to inventory
+        noneNum = 0
+        for i in interface.Craving.ingreds:
+            if i == 'None':
+                noneNum += 1
+            if noneNum == len(interface.Craving.ingreds):
+                #Add function to add item to inventory
+                interface.CurrentCraving.Slots = [] #Deletes the NoneType sprites in Slots
+                interface.Craving.crave()
     else:
         interface.actionText.text = "The {} burned out of existence."
