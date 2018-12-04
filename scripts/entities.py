@@ -23,9 +23,12 @@ class ItemSpawning():
         self.item_coord = []
 
         #location of all the individual spawners
-        #self.locations = [[500,510]] #original
-        self.locations = [[300,510]] #for debug - location:blender in kitchen
+        #self.locations = [[300,510]] #for debug
+        self.locations = [[300,510],[420,300]]
         self.spawnerList = []
+
+        for i in self.locations:
+            self.item_list.append([])
         
         for spawner in self.locations:
             self.spawnerList.append(pyglet.sprite.Sprite(img=assets.spawner_img,x=spawner[0],y=spawner[1],batch=batch))
@@ -33,29 +36,23 @@ class ItemSpawning():
     #Update function to spawn items
     #Spawns a monster once every eight 'turns'
     def update(self):
-        if len(self.locations) > 0:
-            self.checkCapacity()
-            if self.spawn == True:
-                if self.timer < self.wait:
-                    self.timer += 1
-                elif self.timer == self.wait:
-                    self.spawnItem()
-                    self.timer = 0
-                
-    #Checks if any items need to be spawned
-    def checkCapacity(self):
-        if len(self.item_list) < 1:
-            self.spawn = True
-        else:
-            self.spawn = False
+        if self.timer < self.wait:
+            self.timer += 1
+        elif self.timer == self.wait:
+            for spawnInd in range(len(self.item_list)):
+                print('need here: ',spawnInd)
+                if self.item_list[spawnInd] == []:
+                    print('spawn at: ', spawnInd)
+                    self.spawnItem(spawnInd)
+            self.timer = 0
 
 	#Decides which monster to spawn, spawns them in one of the spawner objects
-    def spawnItem(self):
+    def spawnItem(self,itemInd):
         pickSpawn = random.choice(CookBook.Ingredients)
-        pick = [0,0,0,0,0,1,1,1,1,2]
-        self.item_list.append(ItemEntity(img=assets.items_img[assets.items_img.index(pyglet.resource.image('{}.png'.format(pickSpawn)))] , 
-            x=self.locations[0][0], y=self.locations[0][1], name = pickSpawn, spawnerID = itemSpawner_first,batch = self.batch))
-
+        self.item_list[itemInd] = ItemEntity(img=assets.items_img[assets.items_img.index(pyglet.resource.image('{}.png'.format(pickSpawn)))] , 
+            x=self.locations[itemInd][0], y=self.locations[itemInd][1], name = pickSpawn, spawnerID = itemSpawner_first,batch = self.batch)
+        print(self.item_list)
+        
 class ItemEntity(pyglet.sprite.Sprite):
     def __init__(self,name,spawnerID,*args,**kwargs):
         super().__init__(*args,**kwargs)
@@ -218,7 +215,7 @@ class EnemySpawners():
                 elif pick[spin] == 2:
                     self.enemy_list.append(Large_monster(spawnerID=spawner_first,obstacleID=self.obstacles,
                                                     x=self.locations[pickSpawn][0],y=self.locations[pickSpawn][1],batch=self.batch))
-    
+
 class Enemy(pyglet.sprite.Sprite):
     '''
     Base class for all enemy types
@@ -263,7 +260,7 @@ class Enemy(pyglet.sprite.Sprite):
     def randomPossibleDestinations(self):
         possible = [[self.x-30,self.y],[self.x+30,self.y],[self.x,self.y-30],[self.x,self.y+30]]
         for i in range(len(possible)-1,-1,-1):
-            if possible[i] in self.obstacles.obstacle_coord:
+            if possible[i] in self.obstacles.obstacle_coord or possible[i] in [[450,360],[480,420]]:
                 del(possible[i])
             elif possible[i] in self.spawner.enemy_coord:
                 del(possible[i])
@@ -283,7 +280,7 @@ class Enemy(pyglet.sprite.Sprite):
     def directPossibleDestinations(self):
         possible2 = [[self.x-30,self.y],[self.x+30,self.y],[self.x,self.y-30],[self.x,self.y+30]]
         for i in range(len(possible2)-1,-1,-1):
-            if possible2[i] in self.obstacles.obstacle_coord:
+            if possible2[i] in self.obstacles.obstacle_coord or possible2[i] in [[450,360],[480,420]]:
                 possible2[i] = None
             if possible2[i] in self.spawner.enemy_coord:
                 possible2[i] = None
@@ -532,9 +529,9 @@ class Player(pyglet.sprite.Sprite):
     def nearItemFinder(self):
         self.nearItems = []
         for n in itemSpawner_first.item_list:
-            if self.iSpawner.item_coord[self.iSpawner.item_list.index(n)] in self.nearbyTiles:
+            if self.iSpawner.item_coord[self.iSpawner.item_list.index(n)] in self.nearbyTiles and n != []:
                 self.nearItems.append(n)
-				
+
     def update(self):
         #Check if there are gettable items nearby
         self.nearbyTiles = [[self.x-30,self.y],[self.x+30,self.y],[self.x,self.y-30],[self.x,self.y+30]]
@@ -544,7 +541,7 @@ class Player(pyglet.sprite.Sprite):
             self.onCooker = True
         else:
             self.onCooker = False
-        if len(itemSpawner_first.item_list) > 0:
+        if len(itemSpawner_first.item_coord) > 0:
             self.nearItemFinder()
             if len(self.nearItems) > 0:
                 itemNearby = True
@@ -573,30 +570,27 @@ class Player(pyglet.sprite.Sprite):
                 self.image=assets.playerB_img
                 moveLargeEnemies()
             elif self.key_handler[key._1]:
-                if self.onCooker == True:
+                if self.onCooker == True and interface.inventory[0] != 'null':
                     CookBook.itemCook(interface.inventory[0])
-                else:
+                elif interface.inventory[0] != 'null':
                     CookBook.itemEat(interface.inventory[0])
                 interface.inventory_update_subtract(interface.inventory[0])
             elif self.key_handler[key._2]:
-                if self.onCooker == True:
+                if self.onCooker == True and interface.inventory[1] != 'null':
                     CookBook.itemCook(interface.inventory[1])
-                else:
+                elif interface.inventory[1] != 'null':
                     CookBook.itemEat(interface.inventory[1])
                 interface.inventory_update_subtract(interface.inventory[1])
             elif self.key_handler[key._3]:
-                if self.onCooker == True:
+                if self.onCooker == True and interface.inventory[2] != 'null':
                     CookBook.itemCook(interface.inventory[2])
-                else:
+                elif interface.inventory[2] != 'null':
                     CookBook.itemEat(interface.inventory[2])
                 interface.inventory_update_subtract(interface.inventory[2])
                 
             elif self.key_handler[key.SPACE]:
                     if itemNearby:
                         interface.item_get(self.nearItems[0])
-                        print(itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])])
-                        itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])].delete()
-                        del itemSpawner_first.item_list[itemSpawner_first.item_list.index(self.nearItems[0])]
                     else:
 	                    interface.actionText.text = "There's nothing here."
             else:
@@ -708,7 +702,7 @@ class Scoring:
         self.Score_Label.text = '0'*(6-len(str(self.Score)))+'{}'.format(self.Score)
 
 satiety = SP_Bar(x=125,y=205,batch=entity_batch)
-satietyBar = pyglet.sprite.Sprite(img=assets.satietyBar_img,x=125,y=203,batch=entity_batch)
+satietyBar = pyglet.sprite.Sprite(img=assets.satietyBar_img,x=123,y=203,batch=entity_batch)
 health = HP_Bar(x=125,y=75,batch=entity_batch)
 
 player_score = Scoring()
