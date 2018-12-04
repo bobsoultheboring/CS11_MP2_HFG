@@ -4,13 +4,6 @@ from pyglet.window import key
 
 gameWindow = pyglet.window.Window(1280,720)
 
-def Game_Timer(dt):
-    time_check = interface.Timer.update()
-    if time_check == 0:
-        interface.Timer.time_display.text = 'Time\'s Up!'
-        interface.Timer.time_display.font_size = 20
-        pyglet.clock.unschedule(Game_Timer)
-		
 def updateItemsUI(dt):
     entities.itemSpawner_first.update()
     interface.slot_1.update()
@@ -32,6 +25,7 @@ def firstFloor():
         entities.player.update()
         entities.keyCommand.update()
         if entities.player.dead == True:
+            pyglet.clock.unschedule(Game_Timer)
             gameWindow.remove_handlers(entities.player.key_handler)
             gameWindow.push_handlers(entities.keyCommand.key_handler)
         for obj in playerStats:
@@ -49,6 +43,18 @@ def firstFloor():
         for obj in entities.spawner_first.enemy_list:
             if obj.moveWithPlayer == False:
                 obj.update()    
+
+    def Game_Timer(dt):
+        time_check = interface.Timer.update()
+        if time_check == 0:
+            entities.player.timeup()
+            interface.Timer.time_display.text = 'Time\'s Up!'
+            interface.Timer.time_display.font_size = 20
+
+            entities.player.dead = True
+            pyglet.clock.unschedule(updateEnemyFirst)
+            pyglet.clock.unschedule(updateItemsUI)
+                
 
     @gameWindow.event
     def on_draw():
