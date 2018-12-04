@@ -512,7 +512,7 @@ class Player(pyglet.sprite.Sprite):
         self.moveX,self.moveY = 0,0
         self.coord = [self.x,self.y]
 
-        self.satiety = 1.0
+        self.satiety = 100.0
         self.health = 10.0
         self.damage = 1
 
